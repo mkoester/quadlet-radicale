@@ -18,14 +18,14 @@ This project was created with the help of Claude Code and https://github.com/mko
 ## Setup
 
 ```sh
+# 1. Create service user (regular user, home in /var/lib)
+sudo useradd -m -d /var/lib/radicale -s /usr/sbin/nologin radicale
+
 REPO_URL=https://github.com/mkoester/quadlet-radicale.git
 REPO=~radicale/quadlet-radicale
 ```
 
 ```sh
-# 1. Create service user (regular user, home in /var/lib)
-sudo useradd -m -d /var/lib/radicale -s /usr/sbin/nologin radicale
-
 # 2. Enable linger
 sudo loginctl enable-linger radicale
 
