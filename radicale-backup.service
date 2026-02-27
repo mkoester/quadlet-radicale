@@ -1,0 +1,6 @@
+[Unit]
+Description=Radicale CalDAV/CardDAV data backup
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/rsync -a --delete %h/data/ /var/backups/radicale/

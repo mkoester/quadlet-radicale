@@ -1,0 +1,41 @@
+[Unit]
+Description=Radicale CalDAV/CardDAV server
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image=ghcr.io/kozea/radicale:stable
+AutoUpdate=registry
+
+# User Namespace Mapping - Container UID 1000 = Host UID (radicale)
+# radicale:x:1000:1000 (confirmed via /etc/passwd in the image)
+UserNS=keep-id:uid=1000,gid=1000
+User=1000
+Group=1000
+
+# Environment variables
+EnvironmentFile=%h/.config/containers/systemd/radicale.env
+EnvironmentFile=%h/.config/containers/systemd/radicale.override.env
+
+# Volumes (bind mounts)
+# Config directory (read-only) — place radicale config at ~radicale/config/config
+Volume=%h/config:/etc/radicale:Z,ro
+# Data directory (writable) — CalDAV/CardDAV collections
+Volume=%h/data:/var/lib/radicale:Z
+
+# Port mapping (host:container)
+# Bind to localhost only — Caddy handles TLS and basicauth in front
+PublishPort=127.0.0.1:5232:5232
+
+# Health check — Alpine image includes wget via busybox
+HealthCmd=wget -q -O /dev/null http://localhost:5232/.well-known/caldav || exit 1
+HealthInterval=30s
+HealthTimeout=10s
+HealthRetries=3
+
+[Service]
+Restart=always
+TimeoutStartSec=900
+
+[Install]
+WantedBy=default.target
