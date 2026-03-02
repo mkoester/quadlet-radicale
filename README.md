@@ -87,7 +87,7 @@ The template sets:
 | `auth.type` | `none` | Auth delegated to Caddy (basicauth) |
 | `storage.filesystem_folder` | `/var/lib/radicale/collections` | CalDAV/CardDAV data location |
 
-Since Radicale is only reachable via `127.0.0.1:5232` (bound to localhost), and Caddy sits in front enforcing basicauth, setting `auth.type = none` is safe.
+Caddy handles password verification and forwards the authenticated username in the `X-Remote-User` header. Radicale reads that header (`auth.type = http_x_remote_user`) to identify the user and serve their personal collections.
 
 ## Reverse proxy (Caddy)
 
@@ -95,11 +95,14 @@ Add a site block to your Caddyfile. Replace `radicale.example.com` and the crede
 
 ```
 radicale.example.com {
-    basicauth {
+    basic_auth {
         # Generate a bcrypt hash: caddy hash-password
         username <bcrypt-hash>
     }
-    reverse_proxy localhost:5232
+    reverse_proxy localhost:5232 {
+        # Forward the authenticated username so Radicale can identify the user
+        header_up X-Remote-User {http.auth.user.id}
+    }
 }
 ```
 

@@ -2,9 +2,9 @@
 hosts = 0.0.0.0:5232
 
 [auth]
-# Authentication is handled by Caddy (basicauth).
-# Radicale trusts all connections arriving from the reverse proxy.
-type = none
+# Caddy handles password verification and forwards the authenticated username
+# in the X-Remote-User header. Radicale trusts that header to identify the user.
+type = http_x_remote_user
 
 [storage]
 filesystem_folder = /var/lib/radicale/collections
