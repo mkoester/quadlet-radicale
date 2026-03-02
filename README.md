@@ -84,7 +84,7 @@ The template sets:
 | Option | Value | Description |
 |---|---|---|
 | `server.hosts` | `0.0.0.0:5232` | Listen on all interfaces inside the container |
-| `auth.type` | `none` | Auth delegated to Caddy (basicauth) |
+| `auth.type` | `http_x_remote_user` | Auth delegated to Caddy (basicauth) |
 | `storage.filesystem_folder` | `/var/lib/radicale/collections` | CalDAV/CardDAV data location |
 
 Caddy handles password verification and forwards the authenticated username in the `X-Remote-User` header. Radicale reads that header (`auth.type = http_x_remote_user`) to identify the user and serve their personal collections.
