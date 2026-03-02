@@ -12,7 +12,7 @@ This project was created with the help of Claude Code and https://github.com/mko
 | `radicale.env` | Default environment variables |
 | `radicale.override.env.template` | Template for local overrides |
 | `radicale.config.template` | Template for the Radicale application config |
-| `radicale-backup.service` | Systemd service: copies CalDAV/CardDAV data via `rsync` |
+| `radicale-backup.service` | Systemd service: copies CalDAV/CardDAV data and config via `rsync` |
 | `radicale-backup.timer` | Systemd timer: triggers the backup daily |
 
 ## Setup
@@ -112,15 +112,23 @@ After editing the Caddyfile, reload Caddy:
 sudo systemctl reload caddy
 ```
 
+### Backing up Caddy credentials
+
+The `basic_auth` block in the Caddyfile contains the bcrypt-hashed user passwords — there is no separate credentials file. Include `/etc/caddy/` in your system-level config backup:
+
+```sh
+rsync -a /etc/caddy/ /var/backups/caddy/
+```
+
 ## Backup
 
 Radicale stores CalDAV/CardDAV data as plain files on disk, so the backup uses `rsync`. See the [general backup setup](https://github.com/mkoester/quadlet-my-guidelines#backup) in the guidelines for the one-time server-wide setup (group, backup user, SSH key).
 
 ```sh
-# 1. Create backup staging directory (owned by radicale, readable by backup-readers group)
-sudo mkdir -p /var/backups/radicale
-sudo chown radicale:backup-readers /var/backups/radicale
-sudo chmod 750 /var/backups/radicale
+# 1. Create backup staging directories (owned by radicale, readable by backup-readers group)
+sudo mkdir -p /var/backups/radicale/data /var/backups/radicale/config
+sudo chown -R radicale:backup-readers /var/backups/radicale
+sudo chmod -R 750 /var/backups/radicale
 
 # 2. Symlink the backup service and timer from the repo
 sudo -u radicale mkdir -p ~radicale/.config/systemd/user
@@ -137,6 +145,8 @@ sudo -u radicale XDG_RUNTIME_DIR=/run/user/$(id -u radicale) systemctl --user en
 ```sh
 rsync -az backupuser@radicale-host:/var/backups/radicale/ /path/to/local/backup/radicale/
 ```
+
+This pulls both `data/` (CalDAV/CardDAV collections) and `config/` (Radicale application config) into the local backup directory.
 
 ## Notes
 
