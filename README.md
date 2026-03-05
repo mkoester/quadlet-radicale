@@ -96,14 +96,29 @@ Add a site block to your Caddyfile. Replace `radicale.example.com` and the crede
 ```
 radicale.example.com {
     basic_auth {
-        # Generate a bcrypt hash: caddy hash-password
-        username <bcrypt-hash>
+        import /etc/caddy/radicale-credentials
     }
     reverse_proxy localhost:5232 {
         # Forward the authenticated username so Radicale can identify the user
         header_up X-Remote-User {http.auth.user.id}
     }
 }
+```
+
+Create the credentials file. Each line has the format `username <bcrypt-hash>`:
+
+```sh
+# Generate a bcrypt hash for each user
+caddy hash-password
+
+# Create the credentials file
+sudo tee /etc/caddy/radicale-credentials << 'EOF'
+username <bcrypt-hash>
+EOF
+
+# Restrict access: Caddy (root) reads it, radicale user can read it for backup
+sudo chown root:radicale /etc/caddy/radicale-credentials
+sudo chmod 640 /etc/caddy/radicale-credentials
 ```
 
 After editing the Caddyfile, reload Caddy:
@@ -114,11 +129,7 @@ sudo systemctl reload caddy
 
 ### Backing up Caddy credentials
 
-The `basic_auth` block in the Caddyfile contains the bcrypt-hashed user passwords — there is no separate credentials file. Include `/etc/caddy/` in your system-level config backup:
-
-```sh
-rsync -a /etc/caddy/ /var/backups/caddy/
-```
+`/etc/caddy/radicale-credentials` is picked up by the radicale backup service (see [Backup](#backup) below).
 
 ## Backup
 
@@ -126,7 +137,7 @@ Radicale stores CalDAV/CardDAV data as plain files on disk, so the backup uses `
 
 ```sh
 # 1. Create backup staging directories (owned by radicale, readable by backup-readers group)
-sudo mkdir -p /var/backups/radicale/data /var/backups/radicale/config
+sudo mkdir -p /var/backups/radicale/data /var/backups/radicale/config /var/backups/radicale/caddy
 sudo chown -R radicale:backup-readers /var/backups/radicale
 sudo chmod -R 750 /var/backups/radicale
 
@@ -146,7 +157,7 @@ sudo -u radicale XDG_RUNTIME_DIR=/run/user/$(id -u radicale) systemctl --user en
 rsync -az backupuser@radicale-host:/var/backups/radicale/ /path/to/local/backup/radicale/
 ```
 
-This pulls both `data/` (CalDAV/CardDAV collections) and `config/` (Radicale application config) into the local backup directory.
+This pulls `data/` (CalDAV/CardDAV collections), `config/` (Radicale application config), and `caddy/` (Caddy credentials) into the local backup directory.
 
 ## Notes
 

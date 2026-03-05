@@ -5,3 +5,4 @@ Description=Radicale CalDAV/CardDAV data and config backup
 Type=oneshot
 ExecStart=/usr/bin/rsync -a --delete %h/data/ /var/backups/radicale/data/
 ExecStart=/usr/bin/rsync -a --delete %h/config/ /var/backups/radicale/config/
+ExecStart=/usr/bin/rsync -a /etc/caddy/radicale-credentials /var/backups/radicale/caddy/
