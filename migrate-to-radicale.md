@@ -21,7 +21,7 @@ I migrated from Nextcloud, adjust to your setup (especially `url`, `username`, `
 status_path = "./vdirsyncer-status/"
 
 # ============================================================
-# KALENDER: <Source> → local
+# CALENDAR: <Source> → local
 # ============================================================
 
 [pair cal_source_to_local]
@@ -41,7 +41,7 @@ path = "./source-export/calendars/"
 fileext = ".ics"
 
 # ============================================================
-# KALENDER: local → Radicale
+# CALENDAR: local → Radicale
 # ============================================================
 
 [pair cal_local_to_radicale]
@@ -56,7 +56,7 @@ username = "userB"
 password = "passwordB"
 
 # ============================================================
-# KONTAKTE: <Source> → local
+# CONTACTS: <Source> → local
 # ============================================================
 
 [pair contacts_source_to_local]
@@ -76,7 +76,7 @@ path = "./source-export/contacts/"
 fileext = ".vcf"
 
 # ============================================================
-# KONTAKTE: local → Radicale
+# CONTACTS: local → Radicale
 # ============================================================
 
 [pair contacts_local_to_radicale]

@@ -14,6 +14,7 @@ This project was created with the help of Claude Code and https://github.com/mko
 | `radicale.config.template` | Template for the Radicale application config |
 | `radicale-backup.service` | Systemd service: copies CalDAV/CardDAV data and config via `rsync` |
 | `radicale-backup.timer` | Systemd timer: triggers the backup daily |
+| `migrate-to-radicale.md` | How to migrate from another DAV server |
 
 ## Setup
 
