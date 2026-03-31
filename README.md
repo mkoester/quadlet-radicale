@@ -117,8 +117,13 @@ sudo tee /etc/caddy/radicale-credentials << 'EOF'
 username <bcrypt-hash>
 EOF
 
-# Restrict access: Caddy (root) reads it, radicale user can read it for backup
-sudo chown root:radicale /etc/caddy/radicale-credentials
+# Create a dedicated group for the credentials file and add both service users
+sudo groupadd caddy-creds-radicale
+sudo usermod -aG caddy-creds-radicale caddy
+sudo usermod -aG caddy-creds-radicale radicale
+
+# Restrict access: only members of caddy-creds-radicale can read it
+sudo chown root:caddy-creds-radicale /etc/caddy/radicale-credentials
 sudo chmod 640 /etc/caddy/radicale-credentials
 ```
 
