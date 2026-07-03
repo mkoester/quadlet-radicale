@@ -145,7 +145,7 @@ Radicale stores CalDAV/CardDAV data as plain files on disk, so the backup uses `
 # 1. Create backup staging directories (owned by radicale, readable by backup-readers group)
 sudo mkdir -p /var/backups/radicale/data /var/backups/radicale/config /var/backups/radicale/caddy
 sudo chown -R radicale:backup-readers /var/backups/radicale
-sudo chmod -R 750 /var/backups/radicale
+sudo chmod 2750 /var/backups/radicale
 
 # 2. Symlink the backup service and timer from the repo
 sudo -u radicale mkdir -p ~radicale/.config/systemd/user
